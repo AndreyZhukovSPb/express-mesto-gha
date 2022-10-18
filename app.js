@@ -25,7 +25,7 @@ app.use(cardsRouter);
 app.use(userRouter);
 
 app.patch('*', (req, res) => {
-  res.status(400).send({ message: 'Переданы некорректные данные' });
+  res.status(404).send({ message: 'Переданы некорректные данные' });
 });
 
 app.listen(PORT, () => {
