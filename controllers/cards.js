@@ -29,11 +29,14 @@ const getCards = (req, res) => Card.find({})
 
 const deleteCardById = (req, res) => Card.findByIdAndRemove(req.params.cardId)
   .then((card) => {
-    res.status(201).send(card);
+    if (!card) {
+      return res.status(404).send({ message: 'Запрашиваемая карточка не найдена' });
+    }
+    return res.status(200).send(card);
   })
   .catch((err) => {
     if (err instanceof mongoose.Error.CastError) {
-      return res.status(404).send({ message: 'Запрашиваемая карточка не найдена', err });
+      return res.status(400).send({ message: 'Переданы некорректные данные', err });
     }
     return res.status(500).send({ message: 'На сервере произошла ошибка', err });
   });
