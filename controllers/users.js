@@ -15,7 +15,7 @@ const createUser = (req, res) => User.create(req.body)
 
 const getUsers = (req, res) => User.find({})
   .then((users) => {
-    res.status(201).send(users);
+    res.status(200).send(users);
   })
   .catch((err) => {
     if (err instanceof mongoose.Error.ValidationError) {
@@ -26,11 +26,14 @@ const getUsers = (req, res) => User.find({})
 
 const getUserById = (req, res) => User.findById(req.params.userId)
   .then((user) => {
-    res.status(201).send(user);
+    if (!user) {
+      return res.status(404).send({ message: 'Запрашиваемый пользователь не найден', err });
+    }
+    return res.status(200).send(user);
   })
   .catch((err) => {
     if (err instanceof mongoose.Error.CastError) {
-      return res.status(404).send({ message: 'Запрашиваемый пользователь не найден', err });
+      return res.status(400).send({ message: 'Переданы некорректные данные', err });
     }
     return res.status(500).send({ message: 'На сервере произошла ошибка', err });
   });
@@ -48,7 +51,7 @@ const updateUser = (req, res) => {
     },
   )
     .then((user) => {
-      res.status(201).send(user);
+      res.status(200).send(user);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
@@ -73,7 +76,7 @@ const updateUserAvatar = (req, res) => {
     },
   )
     .then((user) => {
-      res.status(201).send(user);
+      res.status(200).send(user);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {

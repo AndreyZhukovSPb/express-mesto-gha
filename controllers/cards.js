@@ -18,7 +18,7 @@ const createCard = (req, res) => {
 
 const getCards = (req, res) => Card.find({})
   .then((cards) => {
-    res.status(201).send(cards);
+    res.status(200).send(cards);
   })
   .catch((err) => {
     if (err instanceof mongoose.Error.ValidationError) {
@@ -45,13 +45,13 @@ const likeCard = (req, res) => {
     { new: true },
   )
     .then((card) => {
-      res.status(201).send(card);
+      if (!card) {
+        return res.status(404).send({ message: 'Запрашиваемая карточка не найдена' });
+      }
+      return res.status(200).send(card);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        return res.status(404).send({ message: 'Запрашиваемая карточка не найдена', err });
-      }
-      if (err instanceof mongoose.Error.ValidationError) {
         return res.status(400).send({ message: 'Переданы некорректные данные', err });
       }
       return res.status(500).send({ message: 'На сервере произошла ошибка', err });
@@ -66,13 +66,13 @@ const dislikeCard = (req, res) => {
     { new: true },
   )
     .then((card) => {
-      res.status(201).send(card);
+      if (!card) {
+        return res.status(404).send({ message: 'Запрашиваемая карточка не найдена' });
+      }
+      return res.status(200).send(card);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        return res.status(404).send({ message: 'Запрашиваемая карточка не найдена', err });
-      }
-      if (err instanceof mongoose.Error.ValidationError) {
         return res.status(400).send({ message: 'Переданы некорректные данные', err });
       }
       return res.status(500).send({ message: 'На сервере произошла ошибка', err });
