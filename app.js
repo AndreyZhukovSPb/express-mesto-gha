@@ -27,7 +27,7 @@ app.use('/users', cardsRouter);
 app.use('/cards', userRouter);
 
 app.use((req, res) => {
-  res.status(ALERTS.CODES.DATA).send({ message: ALERTS.MESSAGES.DATA });
+  res.status(ALERTS.CODES.PATH).send({ message: ALERTS.MESSAGES.PATH });
 });
 
 app.listen(PORT, () => {
