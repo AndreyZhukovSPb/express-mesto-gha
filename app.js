@@ -6,6 +6,8 @@ const cardsRouter = require('./routes/users');
 
 const userRouter = require('./routes/cards');
 
+const { ALERTS } = require('./utils/constants');
+
 const { PORT = 3000, MONGO_URL = 'mongodb://localhost:27017/mestodb' } = process.env;
 
 mongoose.connect(MONGO_URL, {});
@@ -21,11 +23,11 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(cardsRouter);
-app.use(userRouter);
+app.use('/users', cardsRouter);
+app.use('/cards', userRouter);
 
-app.patch('*', (req, res) => {
-  res.status(404).send({ message: 'Переданы некорректные данные' });
+app.use((req, res) => {
+  res.status(ALERTS.CODES.DATA).send({ message: ALERTS.MESSAGES.DATA });
 });
 
 app.listen(PORT, () => {

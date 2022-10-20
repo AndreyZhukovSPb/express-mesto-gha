@@ -1,42 +1,41 @@
-/* eslint-disable no-underscore-dangle */
 const mongoose = require('mongoose');
 const User = require('../models/user');
+const { ALERTS } = require('../utils/constants');
 
 const createUser = (req, res) => User.create(req.body)
   .then((user) => {
-    res.status(201).send(user);
+    res.send(user);
   })
   .catch((err) => {
     if (err instanceof mongoose.Error.ValidationError) {
-      return res.status(400).send({ message: 'Переданы некорректные данные', err });
+      return res.status(ALERTS.CODES.DATA).send({ message: ALERTS.MESSAGES.DATA });
     }
-    return res.status(500).send({ message: 'На сервере произошла ошибка', err });
+    return res.status(ALERTS.CODES.OTHER).send({ message: ALERTS.MESSAGES.OTHER });
   });
 
 const getUsers = (req, res) => User.find({})
   .then((users) => {
-    res.status(200).send(users);
+    res.send(users);
   })
   .catch((err) => {
     if (err instanceof mongoose.Error.ValidationError) {
-      return res.status(400).send({ message: 'Переданы некорректные данные', err });
+      return res.status(ALERTS.CODES.DATA).send({ message: ALERTS.MESSAGES.DATA });
     }
-    return res.status(500).send({ message: 'На сервере произошла ошибка', err });
+    return res.status(ALERTS.CODES.OTHER).send({ message: ALERTS.MESSAGES.OTHER });
   });
 
 const getUserById = (req, res) => User.findById(req.params.userId)
-
   .then((user) => {
     if (!user) {
-      return res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
+      return res.status(ALERTS.CODES.PATH).send({ message: ALERTS.MESSAGES.PATH });
     }
-    return res.status(200).send(user);
+    return res.send(user);
   })
   .catch((err) => {
     if (err instanceof mongoose.Error.CastError) {
-      return res.status(400).send({ message: 'Переданы некорректные данные', err });
+      return res.status(ALERTS.CODES.DATA).send({ message: ALERTS.MESSAGES.DATA });
     }
-    return res.status(500).send({ message: 'На сервере произошла ошибка', err });
+    return res.status(ALERTS.CODES.OTHER).send({ message: ALERTS.MESSAGES.OTHER });
   });
 
 const updateUser = (req, res) => {
@@ -52,16 +51,19 @@ const updateUser = (req, res) => {
     },
   )
     .then((user) => {
-      res.status(200).send(user);
+      if (!user) {
+        return res.status(ALERTS.CODES.PATH).send({ message: ALERTS.MESSAGES.PATH });
+      }
+      return res.send(user);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        return res.status(404).send({ message: 'Запрашиваемый пользователь не найден', err });
+        return res.status(ALERTS.CODES.PATH).send({ message: ALERTS.MESSAGES.PATH });
       }
       if (err instanceof mongoose.Error.ValidationError) {
-        return res.status(400).send({ message: 'Переданы некорректные данные', err });
+        return res.status(ALERTS.CODES.DATA).send({ message: ALERTS.MESSAGES.DATA });
       }
-      return res.status(500).send({ message: 'На сервере произошла ошибка', err });
+      return res.status(ALERTS.CODES.OTHER).send({ message: ALERTS.MESSAGES.OTHER });
     });
 };
 
@@ -77,13 +79,19 @@ const updateUserAvatar = (req, res) => {
     },
   )
     .then((user) => {
-      res.status(200).send(user);
+      if (!user) {
+        return res.status(ALERTS.CODES.PATH).send({ message: ALERTS.MESSAGES.PATH });
+      }
+      return res.send(user);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        return res.status(404).send({ message: 'Запрашиваемый пользователь не найден', err });
+        return res.status(ALERTS.CODES.PATH).send({ message: ALERTS.MESSAGES.PATH });
       }
-      return res.status(500).send({ message: 'На сервере произошла ошибка', err });
+      if (err instanceof mongoose.Error.ValidationError) {
+        return res.status(ALERTS.CODES.DATA).send({ message: ALERTS.MESSAGES.DATA });
+      }
+      return res.status(ALERTS.CODES.OTHER).send({ message: ALERTS.MESSAGES.OTHER });
     });
 };
 

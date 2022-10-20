@@ -1,3 +1,10 @@
+/* eslint-disable no-underscore-dangle */
+
 {
-    "extends": "airbnb-base"
+    "extends": "airbnb-base",
+    "rules": {
+      "no-underscore-dangle": "off"
+  }
 }
+
+
