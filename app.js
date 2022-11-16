@@ -36,8 +36,11 @@ app.post(
   '/signup',
   celebrate({
     body: Joi.object().keys({
-      email: Joi.string().required().min(2).max(30),
+      email: Joi.string().required().min(2).max(30), // и так можно?
       password: Joi.string().required(),
+      name: Joi.string().min(2).max(30),
+      about: Joi.string().min(2).max(30),
+      avatar: Joi.string().min(2).max(30), // так можно?
     }).unknown(true),
   }),
   createUser,
@@ -71,3 +74,5 @@ app.listen(PORT, () => {
 // линтером проверить
 // срок токена 1 неделя сделать
 // валидировать tokenAuth?
+
+// createUser приходит пароль в респонсе почему то, на гетюзер нет

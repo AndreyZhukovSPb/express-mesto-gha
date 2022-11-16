@@ -36,7 +36,7 @@ const createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        next(new LogError('указан некорректный email'));
+        next(new DataError('указан некорректный email'));
         // return res.status(ALERTS.CODES.DATA).send({ message: ALERTS.MESSAGES.DATA });
       }
       if (err.code === 11000) { next(new AccessError('пользовталеь с таким email уже зарегистрирован')); }
