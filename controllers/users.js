@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const User = require('../models/user');
-// const { ALERTS } = require('../utils/constants');
+const { ALERTS } = require('../utils/constants');
 const { signToken } = require('../utils/jwt');
 const { NotFoundError } = require('../utils/errors/NotFoundError');
 const { DataError } = require('../utils/errors/DataError');
