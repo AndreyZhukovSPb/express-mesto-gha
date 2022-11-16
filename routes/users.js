@@ -20,7 +20,7 @@ router.get(
   '/:userId',
   celebrate({
     params: {
-      userId: Joi.number().required(),
+      userId: Joi.string().required().min(24).max(24),
     },
   }),
   getUserById,
