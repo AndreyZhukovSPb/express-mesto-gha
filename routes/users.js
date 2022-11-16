@@ -1,8 +1,10 @@
 const router = require('express').Router();
+const { celebrate, Joi } = require('celebrate');
 // const mongoose = require('mongoose');
 // const User = require('../models/user');
+
 const {
-  createUser,
+  getUser,
   getUsers,
   getUserById,
   updateUser,
@@ -11,11 +13,20 @@ const {
 
 router.get('/', getUsers);
 
-router.post('/', createUser);
+router.get('/me', getUser);
 
 router.get('/:userId', getUserById);
 
-router.patch('/me', updateUser);
+router.patch(
+  '/me',
+  celebrate({
+    body: Joi.object().keys({
+      name: Joi.string().required().min(2).max(30),
+      about: Joi.string().required().min(2).max(30),
+    }).unknown(true),
+  }),
+  updateUser,
+);
 
 router.patch('/me/avatar', updateUserAvatar);
 
