@@ -4,7 +4,6 @@ const { celebrate, Joi } = require('celebrate');
 const { errors } = require('celebrate');
 const cardsRouter = require('./routes/users');
 const userRouter = require('./routes/cards');
-const { ALERTS } = require('./utils/constants');
 const { REGEX } = require('./utils/constants');
 
 const { PORT = 3000, MONGO_URL = 'mongodb://localhost:27017/mestodb' } = process.env;
@@ -54,11 +53,9 @@ app.use('/cards', userRouter);
 app.use(errors());
 
 app.use((err, req, res, next) => {
-  // console.log(err);
   const { statusCode = 500, message } = err;
   res.status(statusCode)
     .send({
-      // проверяем статус и выставляем сообщение в зависимости от него
       message: statusCode === 500
         ? 'На сервере произошла ошибка'
         : message,
@@ -71,9 +68,3 @@ app.use((req, res) => {
 
 app.listen(PORT, () => {
 });
-
-// линтером проверить
-// срок токена 1 неделя сделать
-// валидировать tokenAuth?
-
-// createUser приходит пароль в респонсе почему то, на гетюзер нет

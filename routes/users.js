@@ -1,8 +1,6 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 const { REGEX } = require('../utils/constants');
-// const mongoose = require('mongoose');
-// const User = require('../models/user');
 
 const {
   getUser,
