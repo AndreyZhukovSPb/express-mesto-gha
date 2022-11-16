@@ -12,10 +12,11 @@ const { LogError } = require('../utils/errors/LogError');
 
 const tokenAuth = (req, res, next) => {
   const bearerHeader = req.headers.authorization;
+  if (!bearerHeader || bearerHeader === '') { throw new LogError('пустой токен'); }
   const token = bearerHeader.replace('Bearer ', '');
 
   // if (!token || token === '') { return res.status(401).send({ message: 'пустой токен' }); }
-  if (!token || token === '') { throw new LogError('пустой токен'); }
+  // if (!token || token === '') { throw new LogError('пустой токен'); }
   try {
     const result = jwt.verify(token, SECRET_JWT);
     // console.log(result);

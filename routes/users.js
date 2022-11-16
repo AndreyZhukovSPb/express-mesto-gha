@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
+const { REGEX } = require('../utils/constants');
 // const mongoose = require('mongoose');
 // const User = require('../models/user');
 
@@ -15,7 +16,15 @@ router.get('/', getUsers);
 
 router.get('/me', getUser);
 
-router.get('/:userId', getUserById);
+router.get(
+  '/:userId',
+  celebrate({
+    params: {
+      userId: Joi.number().required(),
+    },
+  }),
+  getUserById,
+);
 
 router.patch(
   '/me',
@@ -28,6 +37,14 @@ router.patch(
   updateUser,
 );
 
-router.patch('/me/avatar', updateUserAvatar);
+router.patch(
+  '/me/avatar',
+  celebrate({
+    body: Joi.object().keys({
+      avatar: Joi.string().min(2).max(30).regex(REGEX),
+    }).unknown(true),
+  }),
+  updateUserAvatar,
+);
 
 module.exports = router;

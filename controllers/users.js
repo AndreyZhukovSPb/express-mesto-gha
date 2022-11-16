@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const User = require('../models/user');
-const { ALERTS } = require('../utils/constants');
+// const { ALERTS } = require('../utils/constants');
 const { signToken } = require('../utils/jwt');
 const { NotFoundError } = require('../utils/errors/NotFoundError');
 const { DataError } = require('../utils/errors/DataError');
@@ -9,6 +9,7 @@ const { LogError } = require('../utils/errors/LogError');
 const { AccessError } = require('../utils/errors/AccessError');
 
 const getUser = (req, res, next) => {
+  console.log(req.params);
   User.findOne({ _id: req.user._id })
     .then((user) => {
       // if (!user) { return res.status(403).send({ message: 'пользователь не найден' }); }
@@ -32,7 +33,13 @@ const createUser = (req, res, next) => {
   req.body.password = hash;
   User.create(req.body)
     .then((user) => {
-      res.send(user);
+      res.send({
+        _id: user.id,
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        email: user.email,
+      });
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
@@ -80,7 +87,7 @@ const getUsers = (req, res, next) => User.find({})
 const getUserById = (req, res, next) => User.findById(req.params.userId)
   .then((user) => {
     if (!user) {
-      throw new LogError('пользователь не найден');
+      throw new NotFoundError('пользователь не найден');
       // return res.status(ALERTS.CODES.PATH).send({ message: ALERTS.MESSAGES.PATH });
     }
     return res.send(user);

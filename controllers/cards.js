@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 const Card = require('../models/card');
 // const { ALERTS } = require('../utils/constants');
-// const { NotFoundError } = require('../utils/errors/NotFoundError');
-// const { DataError } = require('../utils/errors/DataError');
+const { NotFoundError } = require('../utils/errors/NotFoundError');
+const { RightsError } = require('../utils/errors/RightsError');
 const { LogError } = require('../utils/errors/LogError');
 const { AccessError } = require('../utils/errors/AccessError');
 
@@ -36,12 +36,12 @@ const getCards = (req, res, next) => Card.find({})
 
 const deleteCardById = (req, res, next) => Card.findById(req.params.cardId)
   .then((card) => {
-    if (!card) { throw new LogError('карточка не найдена'); }
+    if (!card) { throw new NotFoundError('карточка не найдена'); }
     const ownerId = card.owner.toString();
     // if (!card) return res.status(ALERTS.CODES.PATH).send({ message: 'карточка не найдена' });
 
     // if (ownerId !== req.user._id) return res.status(403).send({ message: 'не твое - не трогай' });
-    if (ownerId !== req.user._id) { throw new AccessError('нет прав для удаления'); }
+    if (ownerId !== req.user._id) { throw new RightsError('нет прав для удаления'); }
     Card.findByIdAndRemove(req.params.cardId)
       .then((data) => {
         // if (!data) return res.status(ALERTS.CODES.PATH).send({ message: 'карточка не найдена' });
@@ -67,7 +67,7 @@ const likeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        throw new LogError('карточка не найдена');
+        throw new NotFoundError('карточка не найдена');
         // return res.status(ALERTS.CODES.PATH).send({ message: ALERTS.MESSAGES.PATH });
       }
       return res.send(card);
@@ -90,7 +90,7 @@ const dislikeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        throw new LogError('карточка не найдена');
+        throw new NotFoundError('карточка не найдена');
         // return res.status(ALERTS.CODES.PATH).send({ message: ALERTS.MESSAGES.PATH });
       }
       return res.send(card);
