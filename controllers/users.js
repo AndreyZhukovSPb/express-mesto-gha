@@ -57,7 +57,7 @@ const login = (req, res, next) => {
         // if (!match) { throw new LogError('неверный пароль'); }
         if (!match) { return next(new LogError('указан некорректный пароль')); }
         const result = signToken(user._id);
-        return res.send(result);
+        return res.send({ data: result });
       });
     })
     .catch(next);

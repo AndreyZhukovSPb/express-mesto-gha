@@ -5,6 +5,7 @@ const { errors } = require('celebrate');
 const cardsRouter = require('./routes/users');
 const userRouter = require('./routes/cards');
 const { ALERTS } = require('./utils/constants');
+const { REGEX } = require('./utils/constants');
 
 const { PORT = 3000, MONGO_URL = 'mongodb://localhost:27017/mestodb' } = process.env;
 
@@ -25,7 +26,7 @@ app.post(
   '/signin',
   celebrate({
     body: Joi.object().keys({
-      email: Joi.string().required().min(2).max(30),
+      email: Joi.string().required().email(),
       password: Joi.string().required(),
     }).unknown(true),
   }),
@@ -36,11 +37,11 @@ app.post(
   '/signup',
   celebrate({
     body: Joi.object().keys({
-      email: Joi.string().required().min(2).max(30), // и так можно?
+      email: Joi.string().required().email(),
       password: Joi.string().required(),
       name: Joi.string().min(2).max(30),
       about: Joi.string().min(2).max(30),
-      avatar: Joi.string().min(2).max(30), // так можно?
+      avatar: Joi.string().min(2).max(30).regex(REGEX), // так можно?
     }).unknown(true),
   }),
   createUser,
@@ -65,7 +66,7 @@ app.use((err, req, res, next) => {
 });
 
 app.use((req, res) => {
-  res.status(ALERTS.CODES.PATH).send({ message: 'ALERTS.MESSAGES.PATH' });
+  res.status(404).send({ message: 'Not found' });
 });
 
 app.listen(PORT, () => {
