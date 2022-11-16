@@ -11,7 +11,9 @@ const { AccessError } = require('../utils/errors/AccessError');
 const { LogError } = require('../utils/errors/LogError');
 
 const tokenAuth = (req, res, next) => {
-  const token = req.headers.authorization;
+  const bearerHeader = req.headers.authorization;
+  const token = bearerHeader.replace('Bearer ', '');
+
   // if (!token || token === '') { return res.status(401).send({ message: 'пустой токен' }); }
   if (!token || token === '') { throw new LogError('пустой токен'); }
   try {
