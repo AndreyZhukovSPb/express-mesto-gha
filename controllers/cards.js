@@ -2,19 +2,19 @@ const mongoose = require('mongoose');
 const Card = require('../models/card');
 const { NotFoundError } = require('../utils/errors/NotFoundError');
 const { RightsError } = require('../utils/errors/RightsError');
-const { LogError } = require('../utils/errors/LogError');
+const { DataError } = require('../utils/errors/DataError');
 
 const createCard = (req, res, next) => {
   req.body.owner = req.user._id;
-  Card.create(req.body)
+  Card.create({ name: req.body.name, link: req.body.link, owner: req.body.owner })
     .then((card) => {
       res.send(card);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        next(new LogError('указан некорректные данные'));
+        return next(new DataError('указаны некорректные данные'));
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -33,15 +33,15 @@ const deleteCardById = (req, res, next) => Card.findById(req.params.cardId)
     if (ownerId !== req.user._id) { throw new RightsError('нет прав для удаления'); }
     Card.findByIdAndRemove(req.params.cardId)
       .then((data) => {
-        if (!data) { return next(new LogError('карточка не найдена')); }
+        if (!data) { return next(new NotFoundError('карточка не найдена')); }
         return res.send(data);
       });
   })
   .catch((err) => {
     if (err instanceof mongoose.Error.CastError) {
-      next(new LogError('переданы некорректные данные'));
+      return next(new DataError('переданы некорректные данные'));
     }
-    next(err);
+    return next(err);
   });
 
 const likeCard = (req, res, next) => {
@@ -58,9 +58,9 @@ const likeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        next(new LogError('переданы некорректные данные'));
+        return next(new DataError('переданы некорректные данные'));
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -78,9 +78,9 @@ const dislikeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        next(new LogError('переданы некорректные данные'));
+        return next(new DataError('переданы некорректные данные'));
       }
-      next(err);
+      return next(err);
     });
 };
 

@@ -5,6 +5,7 @@ const { errors } = require('celebrate');
 const cardsRouter = require('./routes/users');
 const userRouter = require('./routes/cards');
 const { REGEX } = require('./utils/constants');
+const { NotFoundError } = require('./utils/errors/NotFoundError');
 
 const { PORT = 3000, MONGO_URL = 'mongodb://localhost:27017/mestodb' } = process.env;
 
@@ -27,7 +28,7 @@ app.post(
     body: Joi.object().keys({
       email: Joi.string().required().email(),
       password: Joi.string().required(),
-    }).unknown(true),
+    }),
   }),
   login,
 );
@@ -40,8 +41,8 @@ app.post(
       password: Joi.string().required(),
       name: Joi.string().min(2).max(30),
       about: Joi.string().min(2).max(30),
-      avatar: Joi.string().min(2).max(30).regex(REGEX),
-    }).unknown(true),
+      avatar: Joi.string().regex(REGEX),
+    }),
   }),
   createUser,
 );
@@ -49,6 +50,10 @@ app.post(
 app.use(tokenAuth);
 app.use('/users', cardsRouter);
 app.use('/cards', userRouter);
+
+app.use((req, res, next) => {
+  next(new NotFoundError('указаны некорректные данные'));
+});
 
 app.use(errors());
 
@@ -61,10 +66,6 @@ app.use((err, req, res, next) => {
         : message,
     });
   next();
-});
-
-app.use((req, res) => {
-  res.status(404).send({ message: 'Not found' });
 });
 
 app.listen(PORT, () => {

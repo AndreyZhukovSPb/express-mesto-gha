@@ -20,7 +20,6 @@ const getUser = (req, res, next) => {
 };
 
 const createUser = (req, res, next) => {
-  if (!req.body.password) { throw new LogError('ошибка в пароле'); }
   const hash = bcrypt.hashSync(req.body.password, 10);
   req.body.password = hash;
   User.create(req.body)
@@ -35,16 +34,15 @@ const createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        next(new DataError('указан некорректный email'));
+        return next(new DataError('указан некорректный email'));
       }
       if (err.code === 11000) { next(new AccessError('пользовталеь с таким email уже зарегистрирован')); }
-      next(err);
+      return next(err);
     });
 };
 
 const login = (req, res, next) => {
   const { email, password } = req.body;
-  if (!email || !password) { throw new DataError('отсутствует логин или пароль'); }
   User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) { throw new LogError('пользователь не найден'); }
@@ -74,9 +72,9 @@ const getUserById = (req, res, next) => User.findById(req.params.userId)
   })
   .catch((err) => {
     if (err instanceof mongoose.Error.CastError) {
-      next(new DataError('указаны некорректные данные'));
+      return next(new DataError('указаны некорректные данные'));
     }
-    next(err);
+    return next(err);
   });
 
 const updateUser = (req, res, next) => {
@@ -93,18 +91,18 @@ const updateUser = (req, res, next) => {
   )
     .then((user) => {
       if (!user) {
-        throw new LogError('пользователь не найден');
+        throw new NotFoundError('пользователь не найден');
       }
       return res.send(user);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        next(new LogError('пользователь не найден'));
+        return next(new NotFoundError('пользователь не найден'));
       }
       if (err instanceof mongoose.Error.ValidationError) {
-        next(new DataError('указаны некорректные данные'));
+        return next(new DataError('указаны некорректные данные'));
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -121,13 +119,13 @@ const updateUserAvatar = (req, res, next) => {
   )
     .then((user) => {
       if (!user) {
-        throw new LogError('пользователь не найден');
+        throw new NotFoundError('пользователь не найден');
       }
       return res.send(user);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        next(new LogError('пользователь не найден'));
+        next(new DataError('указаны некорректные данные'));
       }
       if (err instanceof mongoose.Error.ValidationError) {
         next(new DataError('указаны некорректные данные'));
